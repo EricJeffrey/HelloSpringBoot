@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>EricJeffrey's Pastor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://cdn.bootcss.com/prettify/r298/prettify.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/prettify/r298/prettify.min.js"></script>
+    <script>
+        var ctrlDown = false;
+        window.onkeydown = function (e) {
+            var range;
+            if (e.key === "a" && e.ctrlKey) {
+                e.preventDefault();
+                range = document.createRange();
+                var rf = document.getElementsByTagName("pre").item(0);
+                range.selectNodeContents(rf);
+                var selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            else if (e.key === "Control") {
+                ctrlDown = true;
+            }
+        }
+    </script>
+</head>
+
+<body onload="prettyPrint()" style="font-family: 'Jokerman',fantasy">
+<div style="margin-left: auto; margin-right: auto; width: 90%">
+    <h1 style="margin-left: auto; margin-right: auto; margin-bottom: 4%; width: 30%">EricJeffrey Pastor</h1>
+    <pre class="prettyprint" th:text=${content} id="code">
+int main(){
+
+}
+        </pre>
+    <button class="btn" name="button" data-clipboard-target="#code" data-clipboard-action="copy">click to copy</button>
+    <span id="span" style="font-family:'Lucida Calligraphy',fantasy;color: rgb(7, 103, 192) ">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+        <script>
+            var clip = new ClipboardJS('.btn');
+            clip.on("success", function(e){
+                console.log("ok");
+                document.getElementById("span").innerText = "code copied";
+            });
+        </script>
+</div>
+</body>
+
+</html>
