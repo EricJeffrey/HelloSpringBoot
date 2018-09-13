@@ -36,22 +36,27 @@
 <body onload="prettyPrint()" style="font-family: 'Jokerman',fantasy">
 <div style="margin-left: auto; margin-right: auto; width: 90%">
     <h1 style="margin-left: auto; margin-right: auto; margin-bottom: 4%; width: 30%">EricJeffrey Pastor</h1>
+    <button class="btn" name="button" data-clipboard-target="#code" data-clipboard-action="copy">click to copy</button>
+    <span id="topspan" style="font-family:'Lucida Calligraphy',fantasy;color: rgb(7, 103, 192) "></span>
+    <br>
+    <br>
     <pre class="prettyprint" th:text=${content} id="code">
 int main(){
 
 }
         </pre>
     <button class="btn" name="button" data-clipboard-target="#code" data-clipboard-action="copy">click to copy</button>
-    <span id="span" style="font-family:'Lucida Calligraphy',fantasy;color: rgb(7, 103, 192) ">
+    <span id="span" style="font-family:'Lucida Calligraphy',fantasy;color: rgb(7, 103, 192) "></span>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
-        <script>
-            var clip = new ClipboardJS('.btn');
-            clip.on("success", function(e){
-                console.log("ok");
-                document.getElementById("span").innerText = "code copied";
-            });
-        </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <script>
+        var clip = new ClipboardJS('.btn');
+        clip.on("success", function (e) {
+            console.log("ok");
+            document.getElementById("span").innerText = "code copied";
+            document.getElementById("topspan").innerText = "code copied";
+        });
+    </script>
 </div>
 </body>
 

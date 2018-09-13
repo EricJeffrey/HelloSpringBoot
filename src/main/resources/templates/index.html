@@ -12,38 +12,54 @@
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="https://cdn.bootcss.com/prettify/r298/prettify.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/prettify/r298/prettify.min.js"></script>
-
+    <script>
+        window.onload = function () {
+            var egg = document.getElementById("egg");
+            egg.addEventListener('dblclick', function (e) {
+                var con = document.getElementById("cont").value;
+                e.preventDefault();
+                $.post("http://localhost:8080/paste", {"content":con}, function () {
+                    window.location.href = "http://localhost:8080/lastPasted";
+                });
+            });
+        };
+    </script>
 </head>
 
-<body style="font-family: 'Jokerman'">
-    <div style="margin-left: auto; margin-right: auto; width: 80%">
-        <h1 style="margin-left: auto; margin-right: auto; width: 30%">EricJeffrey Pastor</h1>
-        <form method="POST" action="/paste">
-            <table>
-                <tr>
-                    <td style="font-size: x-large; font-family: 汉仪力量黑简">
-                        You are a human, aren't you?
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <textarea name="content" style="height:40em; width: 90em; font-family: Consolas;"></textarea>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: large">
-                        <input type="submit" value="Paste!">
-                        <a href="/lastPasted">&nbsp;LastPasted</a>
-                    </td>
-                </tr>
-            </table>
-        </form>
-    </div>
+<body style="font-family: 'Jokerman',cursive">
+<div style="margin-left: auto; margin-right: auto; width: 80%">
+    <h1 style="margin-left: auto; margin-right: auto; width: 30%">EricJeffrey Pastor</h1>
+    <form method="POST" action="/paste">
+        <table>
+            <tr>
+                <td id="egg" style="font-size: x-large; font-family: 汉仪力量黑简,fantasy">
+                    You are a human, aren't you?
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <textarea rows="25" name="content" id="cont" style="width: 300%; font-family: Consolas,fantasy;box-shadow: 1px 3px 6px gray"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    &nbsp;
+                </td>
+            </tr>
+            <tr>
+                <td style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: large;">
+                    <input type="submit" value="Paste!">
+                    <a href="/lastPasted">&nbsp;LastPasted</a>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
 </body>
 
 </html>
