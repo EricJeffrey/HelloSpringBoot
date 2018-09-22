@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class HelloSpringBootApplication {
-	public static String content = "int main() { return 0; }";
+    public static final boolean DEBUG = false;
 
     public static void main(String[] args) {
-		SpringApplication.run(HelloSpringBootApplication.class, args);
-	}
+        SpringApplication.run(HelloSpringBootApplication.class, args);
+    }
 }

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>EricJeffrey Pastebin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,12 +13,24 @@
     <link href="https://cdn.bootcss.com/prettify/r298/prettify.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/prettify/r298/prettify.min.js"></script>
     <script>
+        var DEBUG = false;
+
+        function goHome() {
+            var tar = "http://123.206.16.70:8080/index";
+            if (DEBUG === true)
+                tar = "http://localhost:8080/index";
+            window.location.href = tar;
+        }
+
         window.onload = function () {
+            var tar = "http://123.206.16.70:8080/paste";
+            if (DEBUG === true)
+                tar = "http://localhost:8080/paste";
             var egg = document.getElementById("egg");
             egg.addEventListener('dblclick', function (e) {
                 var con = document.getElementById("cont").value;
                 e.preventDefault();
-                $.post("http://localhost:8080/paste", {"content":con}, function () {
+                $.post(tar, {"content": con}, function () {
                     window.location.href = "http://localhost:8080/lastPasted";
                 });
             });
@@ -28,7 +40,7 @@
 
 <body style="font-family: 'Jokerman',cursive">
 <div style="margin-left: auto; margin-right: auto; width: 80%">
-    <h1 style="margin-left: auto; margin-right: auto; width: 30%">EricJeffrey Pastor</h1>
+    <h1 style="margin-left: auto; margin-right: auto; width: 30%" ondblclick="goHome()">EricJeffrey Pastor</h1>
     <form method="POST" action="/paste">
         <table>
             <tr>
@@ -43,7 +55,8 @@
             </tr>
             <tr>
                 <td>
-                    <textarea rows="25" name="content" id="cont" style="width: 300%; font-family: Consolas,fantasy;box-shadow: 1px 3px 6px gray"></textarea>
+                    <textarea rows="25" name="content" id="cont"
+                              style="width: 300%; font-family: Consolas,fantasy;box-shadow: 1px 2px 3px lightskyblue"></textarea>
                 </td>
             </tr>
             <tr>
@@ -59,6 +72,10 @@
             </tr>
         </table>
     </form>
+</div>
+<div style="margin-top: 100px; color: #ffffff;" align="center">
+    <span>page views:</span>
+    <span th:text="${pv}" id="pvs">1</span>
 </div>
 </body>
 
