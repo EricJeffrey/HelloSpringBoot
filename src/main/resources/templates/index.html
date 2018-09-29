@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.w3.org/1999/xhtml">
 
 <head>
     <meta charset="utf-8"/>
@@ -7,76 +7,267 @@
     <title>EricJeffrey Pastebin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="https://cdn.bootcss.com/prettify/r298/prettify.min.css" rel="stylesheet">
     <script src="https://cdn.bootcss.com/prettify/r298/prettify.min.js"></script>
-    <script>
-        var DEBUG = false;
-
-        function goHome() {
-            var tar = "http://123.206.16.70:8080/index";
-            if (DEBUG === true)
-                tar = "http://localhost:8080/index";
-            window.location.href = tar;
+    <style>
+        .body {
+            font-family: 'Jokerman', cursive;
         }
 
-        window.onload = function () {
-            var tar = "http://123.206.16.70:8080/paste";
-            if (DEBUG === true)
-                tar = "http://localhost:8080/paste";
+        .wrapper {
+            margin-left: 5%;
+            margin-right: 5%;
+            width: 90%;
+            display: inline-block;
+        }
+
+        .title {
+            margin-left: auto;
+            margin-right: auto;
+            width: 30%;
+        }
+
+        .pastor_form {
+            width: 55%;
+            float: left;
+        }
+
+        .pastor_hint {
+            font-size: x-large;
+            font-family: 汉仪力量黑简, fantasy;
+        }
+
+        .pastor_textarea {
+            width: 300%;
+            font-family: Consolas, fantasy;
+            box-shadow: 1px 3px 5px rgb(179, 197, 206);
+        }
+
+        .pastor_last {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: large;
+        }
+
+        .file_wrapper {
+            margin-top: 20px;
+            margin-left: 2%;
+            float: left;
+            width: 43%;
+            border: 0.5px solid lightgray;
+            padding: 1px;
+            box-shadow: 1px 2px 3px lightgray;
+        }
+
+        .file_row:hover {
+            border-top: 1px solid #eaecef;
+            background: whitesmoke;
+            padding: 10px;
+        }
+
+        .file_row {
+            border-top: 1px solid #eaecef;
+            padding: 10px;
+            font-size: 16px;
+            font-family: Consolas, '等线', '微软雅黑', fantasy;
+        }
+
+        .file_time_span {
+            float: right;
+        }
+
+        .page_view {
+            margin-top: 100px;
+            color: whitesmoke;
+            float: left;
+            width: 100%;
+        }
+    </style>
+    <script>
+        var DEBUG = false;
+        var HOST = "http://123.206.16.70:8080";
+        if (DEBUG)
+            HOST = "http://localhost:8080";
+
+        function goHome() {
+            window.location.href = HOST + "/index";
+        }
+
+        function setDBClickPaste() {
             var egg = document.getElementById("egg");
             egg.addEventListener('dblclick', function (e) {
                 var con = document.getElementById("cont").value;
                 e.preventDefault();
-                $.post(tar, {"content": con}, function () {
-                    window.location.href = "http://localhost:8080/lastPasted";
+                $.post(HOST + "/paste", {"content": con}, function () {
+                    window.location.href = HOST + "/lastPasted";
                 });
             });
+        }
+
+        function getFiles() {
+            /**
+             * 请求成功时添加元素
+             * 请求失败时添加错误元素
+             */
+            var request = new XMLHttpRequest();
+            var obj;
+            request.onreadystatechange = function () {
+                if (request.readyState === 4) {
+                    if (request.status === 200) {
+                        // success
+                        obj = JSON.parse(request.responseText.toString());
+                        console.log(obj.toString());
+                        console.log(obj.length);
+                        var tb = document.getElementById("files");
+                        for (var i = 0; i < obj.length; i++) {
+                            var tmp = obj[i];
+                            var link = HOST + "/fileDetail?name=" + encodeURI(tmp["name"]);
+                            var tr = document.createElement("tr");
+                            var td = document.createElement("td");
+                            var a = document.createElement("a");
+                            var sp = document.createElement("span");
+
+                            td.setAttribute("class", "file_row");
+
+                            a.setAttribute("href", link);
+                            a.setAttribute("target", "_blank");
+                            a.innerText = tmp["name"];
+
+                            sp.setAttribute("class", "file_time_span");
+                            sp.innerText = tmp["time"];
+
+                            td.appendChild(a);
+                            td.appendChild(sp);
+
+                            tr.appendChild(td);
+                            tb.appendChild(tr);
+                        }
+                    } else {
+                        // fail 出错时刷新本页面
+                        tb = document.getElementById("files");
+                        tmp = "=_= 出错了.jgp";
+                        link = HOST + "/index";
+                        var re = document.createElement("tr");
+                        var rd = document.createElement("td");
+                        var namea = document.createElement("a");
+                        sp = document.createElement("span");
+
+                        rd.setAttribute("class", "file_row");
+
+                        namea.setAttribute("href", link);
+                        namea.setAttribute("target", "_blank");
+                        namea.innerText = tmp;
+
+                        sp.setAttribute("class", "file_time_span");
+
+                        rd.appendChild(namea);
+                        rd.appendChild(sp);
+
+                        re.appendChild(rd);
+                        tb.appendChild(re);
+                    }
+                } else {
+                    // sending
+                }
+            };
+            request.open('GET', HOST + "/files");
+            request.send();
+
+            // fake data here
+            // var tb = document.getElementById("files");
+            // var fadeInMills = 0;
+            // for (var i = 0; i < obj.length; i++) {
+            //     var tmp = obj[i];
+            //     var link = HOST + "/filedetail?name=" + tmp["name"];
+            //     var tr = document.createElement("tr");
+            //     var td = document.createElement("td");
+            //     var a = document.createElement("a");
+            //     var sp = document.createElement("span");
+
+            //     td.setAttribute("class", "file_row");
+
+            //     a.setAttribute("href", link);
+            //     a.setAttribute("target", "_blank");
+            //     a.innerText = tmp["name"];
+
+            //     sp.setAttribute("class", "file_time_span");
+            //     sp.innerText = tmp["time"];
+
+            //     td.appendChild(a);
+            //     td.appendChild(sp);
+            //     fadeInMills += 400;
+            //     $(td).fadeIn(fadeInMills);
+
+            //     tr.appendChild(td);
+            //     tb.appendChild(tr);
+            // }
+        }
+
+        window.onload = function () {
+            setDBClickPaste();
+            getFiles();
         };
     </script>
 </head>
 
-<body style="font-family: 'Jokerman',cursive">
-<div style="margin-left: auto; margin-right: auto; width: 80%">
-    <h1 style="margin-left: auto; margin-right: auto; width: 30%" ondblclick="goHome()">EricJeffrey Pastor</h1>
-    <form method="POST" action="/paste">
-        <table>
-            <tr>
-                <td id="egg" style="font-size: x-large; font-family: 汉仪力量黑简,fantasy">
-                    You are a human, aren't you?
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    &nbsp;
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <textarea rows="25" name="content" id="cont"
-                              style="width: 300%; font-family: Consolas,fantasy;box-shadow: 1px 2px 3px lightskyblue"></textarea>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    &nbsp;
-                </td>
-            </tr>
-            <tr>
-                <td style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: large;">
-                    <input type="submit" value="Paste!">
-                    <a href="/lastPasted">&nbsp;LastPasted</a>
-                </td>
-            </tr>
-        </table>
-    </form>
+<body class="body">
+<div>
+    <div class="wrapper">
+        <h1 class="title" ondblclick="goHome()">EricJeffrey Pastor</h1>
+        <form method="POST" action="/paste" class="pastor_form">
+            <table>
+                <tr>
+                    <td id="egg" class="pastor_hint">
+                        You are a human, aren't you?
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <textarea rows="25" name="content" id="cont" class="pastor_textarea"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        &nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pastor_last">
+                        <input type="submit" value="Paste!">
+                        <a href="/lastPasted">&nbsp;LastPasted</a>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <div>
+            <!-- hint  -->
+            <span class="pastor_hint" style="margin-left:2%;">You deserve a dream, don't you?</span>
+            <!-- file uploader -->
+            <form class="file_wrapper" style="padding:10px;" method="POST" action="/upload"
+                  enctype="multipart/form-data">
+                <input type="file" style="width: 50%; float: left; font-family: 等线, Consolas,fantasy;" name="file">
+                <input type="submit" style="float: right; font-family: Consolas, fantasy" value="Upload">
+            </form>
+            <!-- files list -->
+            <table class="file_wrapper" id="files">
+            </table>
+        </div>
+    </div>
+    <!-- page views -->
+    <div class="page_view" align="center">
+        <span>page views:</span>
+        <span th:text="${pv}" id="pvs">1</span>
+    </div>
 </div>
-<div style="margin-top: 100px; color: #ffffff;" align="center">
-    <span>page views:</span>
-    <span th:text="${pv}" id="pvs">1</span>
-</div>
+
 </body>
 
 </html>
