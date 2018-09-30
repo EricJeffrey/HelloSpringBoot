@@ -1,6 +1,5 @@
 package com.ericjeffrey.HelloSpringBoot.controller;
 
-import com.ericjeffrey.HelloSpringBoot.HelloSpringBootApplication;
 import org.springframework.format.datetime.DateFormatter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,12 +7,20 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.ericjeffrey.HelloSpringBoot.HelloSpringBootApplication.WORD_DIR_PATH;
+
 @RestController
 public class FileController {
-    private static final String FILE_PATH = HelloSpringBootApplication.DEBUG ? "E:\\temp\\" : "/home/ubuntu/uploadedFiles/";
+    private static final String UPLOADED_FILE_PATH = WORD_DIR_PATH + "uploadedFiles/";
+    private static final String DELETED_FILE_PATH = WORD_DIR_PATH + "deletedFiles/";
 
     /**
      * 上传文件
@@ -24,7 +31,7 @@ public class FileController {
     @PostMapping(value = "/upload")
     @ResponseBody
     public String uploadFile(@RequestParam("file") MultipartFile file, HttpServletResponse response) {
-        if (file.isEmpty()){
+        if (file.isEmpty()) {
             try {
                 response.sendRedirect("/index");
             } catch (IOException e) {
@@ -44,7 +51,7 @@ public class FileController {
 
 //        String suffixName = fileName.substring(fileName.lastIndexOf("."));
 
-        File destination = new File(FILE_PATH + fileName);
+        File destination = new File(UPLOADED_FILE_PATH + fileName);
         if (!destination.getParentFile().exists()) {
             if (!destination.getParentFile().mkdirs()) {
                 try {
@@ -78,7 +85,7 @@ public class FileController {
      */
     @RequestMapping(value = "/files", method = RequestMethod.GET)
     public String getFiles() {
-        File dir = new File(FILE_PATH);
+        File dir = new File(UPLOADED_FILE_PATH);
         if (!dir.isDirectory())
             return "文件夹打开错误";
         File[] allFiles = dir.listFiles();
@@ -92,7 +99,7 @@ public class FileController {
             resBuilder.append("{");
             resBuilder.append(String.format("\"name\": \"%s\", \"time\":\"%s\" ",
                     tmp.getName(),
-                    new DateFormatter().print(new Date(tmp.lastModified()), Locale.CHINA)));
+                    new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(tmp.lastModified()))));
             resBuilder.append("}");
             if (i < allFiles.length - 1)
                 resBuilder.append(",");
@@ -110,7 +117,7 @@ public class FileController {
      */
     @RequestMapping(value = "fileDetail", method = RequestMethod.GET)
     public String downloadFile(@RequestParam(name = "name") @RequestBody String name, HttpServletResponse response) {
-        File file = new File(FILE_PATH, name);
+        File file = new File(UPLOADED_FILE_PATH, name);
         if (file.exists()) {
             response.setContentType("application/force-download");
             try {
@@ -148,5 +155,38 @@ public class FileController {
             return "下载成功";
         }
         return "文件未找到";
+    }
+
+    /**
+     * 删除一个文件
+     *
+     * @param name     文件名
+     * @param response 响应体
+     * @return 文件删除成功或失败
+     */
+    @RequestMapping(value = "deleteFile", method = RequestMethod.GET)
+    public String deleteFile(@RequestParam(name = "name") @RequestBody String name, HttpServletResponse response) {
+        File file = new File(UPLOADED_FILE_PATH, name);
+        if (file.exists()) {
+            try {
+                Files.move(file.toPath(), new File(DELETED_FILE_PATH + name).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                response.sendRedirect("index");
+                return "删除成功";
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                response.sendRedirect("index");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return "删除失败";
+        }
+        try {
+            response.sendRedirect("index");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "文件不存在";
     }
 }

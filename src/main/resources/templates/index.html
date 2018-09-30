@@ -15,7 +15,8 @@
     <script src="https://cdn.bootcss.com/prettify/r298/prettify.min.js"></script>
     <style>
         .body {
-            font-family: 'Jokerman', cursive;
+            font-family: 'Jokerman', Consolas, '等线', '微软雅黑', cursive;
+            background: azure;
         }
 
         .wrapper {
@@ -42,23 +43,36 @@
         }
 
         .pastor_textarea {
-            width: 300%;
+            width: 100%;
             font-family: Consolas, fantasy;
             box-shadow: 1px 3px 5px rgb(179, 197, 206);
         }
 
-        .pastor_last {
+        .pastor_lastPasted {
             font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
             font-size: large;
         }
 
-        .file_wrapper {
-            margin-top: 20px;
+        .file_wrapper_div {
             margin-left: 2%;
-            float: left;
+            float: right;
             width: 43%;
+        }
+
+        .file_wrapper_input {
+            margin-top: 20px;
+            width: 98%;
+            padding: 10px;
+            display: inline-block;
             border: 0.5px solid lightgray;
-            padding: 1px;
+            box-shadow: 1px 2px 3px lightgray;
+        }
+
+        .file_wrapper_table {
+            margin-top: 20px;
+            width: 98%;
+            padding: 10px;
+            border: 0.5px solid lightgray;
             box-shadow: 1px 2px 3px lightgray;
         }
 
@@ -75,7 +89,18 @@
             font-family: Consolas, '等线', '微软雅黑', fantasy;
         }
 
+        .file_download_a {
+            float: left;
+            width: 50%;
+        }
+
         .file_time_span {
+            width: 40%;
+            float: left;
+        }
+
+        .file_delete_a {
+            color: crimson;
             float: right;
         }
 
@@ -113,7 +138,9 @@
              * 请求失败时添加错误元素
              */
             var request = new XMLHttpRequest();
-            var obj;
+            var obj = [{"name": "青玉案", "time": "2014年3月3日"}, {"name": "青玉案", "time": "2014年3月3日"}];
+            var fadeInMills = 0;
+
             request.onreadystatechange = function () {
                 if (request.readyState === 4) {
                     if (request.status === 200) {
@@ -129,18 +156,27 @@
                             var td = document.createElement("td");
                             var a = document.createElement("a");
                             var sp = document.createElement("span");
+                            var deletea = document.createElement("a");
 
                             td.setAttribute("class", "file_row");
 
                             a.setAttribute("href", link);
                             a.setAttribute("target", "_blank");
+                            a.setAttribute("class", "file_download_a");
                             a.innerText = tmp["name"];
 
                             sp.setAttribute("class", "file_time_span");
                             sp.innerText = tmp["time"];
 
+                            deletea.setAttribute("class", "file_delete_a");
+                            deletea.innerText = "delete";
+                            deletea.setAttribute("href", HOST + "/deleteFile?name=" + encodeURI(tmp["name"]));
+
                             td.appendChild(a);
                             td.appendChild(sp);
+                            td.appendChild(deletea);
+                            $(td).fadeIn(fadeInMills);
+                            fadeInMills += 300;
 
                             tr.appendChild(td);
                             tb.appendChild(tr);
@@ -175,35 +211,6 @@
             };
             request.open('GET', HOST + "/files");
             request.send();
-
-            // fake data here
-            // var tb = document.getElementById("files");
-            // var fadeInMills = 0;
-            // for (var i = 0; i < obj.length; i++) {
-            //     var tmp = obj[i];
-            //     var link = HOST + "/filedetail?name=" + tmp["name"];
-            //     var tr = document.createElement("tr");
-            //     var td = document.createElement("td");
-            //     var a = document.createElement("a");
-            //     var sp = document.createElement("span");
-
-            //     td.setAttribute("class", "file_row");
-
-            //     a.setAttribute("href", link);
-            //     a.setAttribute("target", "_blank");
-            //     a.innerText = tmp["name"];
-
-            //     sp.setAttribute("class", "file_time_span");
-            //     sp.innerText = tmp["time"];
-
-            //     td.appendChild(a);
-            //     td.appendChild(sp);
-            //     fadeInMills += 400;
-            //     $(td).fadeIn(fadeInMills);
-
-            //     tr.appendChild(td);
-            //     tb.appendChild(tr);
-            // }
         }
 
         window.onload = function () {
@@ -218,7 +225,7 @@
     <div class="wrapper">
         <h1 class="title" ondblclick="goHome()">EricJeffrey Pastor</h1>
         <form method="POST" action="/paste" class="pastor_form">
-            <table>
+            <table style="width:100%">
                 <tr>
                     <td id="egg" class="pastor_hint">
                         You are a human, aren't you?
@@ -240,24 +247,23 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="pastor_last">
+                    <td class="pastor_lastPasted">
                         <input type="submit" value="Paste!">
                         <a href="/lastPasted">&nbsp;LastPasted</a>
                     </td>
                 </tr>
             </table>
         </form>
-        <div>
+        <div class="file_wrapper_div">
             <!-- hint  -->
-            <span class="pastor_hint" style="margin-left:2%;">You deserve a dream, don't you?</span>
+            <div class="pastor_hint" style="width: 100%">You deserve a dream, don't you?</div>
             <!-- file uploader -->
-            <form class="file_wrapper" style="padding:10px;" method="POST" action="/upload"
-                  enctype="multipart/form-data">
+            <form class="file_wrapper_input" method="POST" action="/upload" enctype="multipart/form-data">
                 <input type="file" style="width: 50%; float: left; font-family: 等线, Consolas,fantasy;" name="file">
                 <input type="submit" style="float: right; font-family: Consolas, fantasy" value="Upload">
             </form>
             <!-- files list -->
-            <table class="file_wrapper" id="files">
+            <table class="file_wrapper_table" id="files">
             </table>
         </div>
     </div>

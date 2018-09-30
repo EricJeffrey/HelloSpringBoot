@@ -6,7 +6,10 @@ import com.ericjeffrey.HelloSpringBoot.model.PastedText;
 import java.io.*;
 import java.util.ArrayDeque;
 
+import static com.ericjeffrey.HelloSpringBoot.HelloSpringBootApplication.WORD_DIR_PATH;
+
 public class DataGrocery {
+    public static final String PAGE_VIEWS_PATH = WORD_DIR_PATH + "pastorPV.txt";
 
     private static final Object sync = new Object();
     private static long VISIT_COUNT = 0;
@@ -72,10 +75,7 @@ public class DataGrocery {
         }
         if (VISIT_COUNT % 100 == 0){
             try {
-                String fileName = "/home/ubuntu/pastorPv.txt";
-                if (HelloSpringBootApplication.DEBUG)
-                    fileName = "e:\\pvs.txt";
-                FileWriter writer = new FileWriter(fileName, false);
+                FileWriter writer = new FileWriter(PAGE_VIEWS_PATH, false);
                 writer.write(String.valueOf(VISIT_COUNT));
                 writer.close();
             } catch (Exception e) {
