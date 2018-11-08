@@ -1,19 +1,15 @@
 package com.ericjeffrey.HelloSpringBoot.controller;
 
-import org.springframework.format.datetime.DateFormatter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import static com.ericjeffrey.HelloSpringBoot.HelloSpringBootApplication.WORD_DIR_PATH;
 
@@ -119,42 +115,52 @@ public class FileController {
     public String downloadFile(@RequestParam(name = "name") @RequestBody String name, HttpServletResponse response) {
         File file = new File(UPLOADED_FILE_PATH, name);
         if (file.exists()) {
-            response.setContentType("application/force-download");
-            try {
-                response.addHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(name, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            FileInputStream fis = null;
-            BufferedInputStream bis = null;
-            OutputStream os = null;
-            try {
-                fis = new FileInputStream(file);
-                bis = new BufferedInputStream(fis);
-                byte[] buffer = new byte[1024];
-                os = response.getOutputStream();
-                int i = bis.read(buffer);
-                while (i != -1) {
-                    os.write(buffer, 0, i);
-                    i = bis.read(buffer);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    if (bis != null)
-                        bis.close();
-                    if (fis != null)
-                        fis.close();
-                    if (os != null)
-                        os.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            downloadTransfer(file, response);
             return "下载成功";
         }
         return "文件未找到";
+    }
+
+    /**
+     * 下载文件 - 传输文件内容
+     * @param file 文件
+     * @param response 响应体
+     */
+    public static void downloadTransfer(File file, HttpServletResponse response) {
+        response.setContentType("application/force-download");
+        try {
+            response.addHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(file.getName(), "UTF-8"));
+            response.setContentLengthLong(file.length());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        try {
+            fis = new FileInputStream(file);
+            bis = new BufferedInputStream(fis);
+            byte[] buffer = new byte[1024];
+            os = response.getOutputStream();
+            int i = bis.read(buffer);
+            while (i != -1) {
+                os.write(buffer, 0, i);
+                i = bis.read(buffer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (bis != null)
+                    bis.close();
+                if (fis != null)
+                    fis.close();
+                if (os != null)
+                    os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
