@@ -62,7 +62,7 @@ public class DataGrocery {
      */
     public static void add(String content) {
         if (texts.size() == MAX_SZ)
-            texts.removeFirst();
+            texts.removeLast();
         texts.addFirst(new PastedText(content));
     }
 
